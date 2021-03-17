@@ -1,0 +1,21 @@
+--- webserver.c	2021-01-16 21:03:45.000000000 -0800
++++ webserver2.c	2021-01-16 21:05:40.000000000 -0800
+@@ -33,6 +33,7 @@
+ #include <fcntl.h>
+ #define _XOPEN_SOURCE
+ #define __USE_XOPEN
++#define MIN(a, b)  (((a) < (b)) ? (a) : (b))
+ #include <time.h>
+ #include <pthread.h>
+ 
+@@ -89,8 +90,8 @@
+     hdrptr += strlen(searchstr);
+     if (hdrend = strstr(hdrptr, "\r\n")) { 
+ 			char hdrval[1024]; // temporary return value
+-			memcpy((char *)hdrval, hdrptr, (hdrend - hdrptr));
+-			hdrval[hdrend - hdrptr] = '\0'; // tack null onto end of header value
++			memcpy((char *)hdrval, hdrptr, MIN(hdrend - hdrptr, 1024));
++			hdrval[MIN(hdrend - hdrptr, 1024)] = '\0'; // tack null onto end of header value
+ 			int hdrvallen = strlen(hdrval);
+      	retval = (char *)malloc((hdrvallen + 1) * sizeof(char)); // malloc a space for retval
+       strcpy(retval, (char *)hdrval);

@@ -1,0 +1,93 @@
+1. Is there any way that employees can read the ballots of other users? If so, what could be done to stop this? If not, what prevents them from reading them?
+
+Yes, if larry creates a file in ballots directory, and moe knows the name of the file, then moe can read the content of the file because the default file mode is 0664, which allows `other` to read.
+
+To prevent this, we need to execute `chmod o-r` on every files in ballots directory.
+
+
+
+
+
+
+
+
+2. What does the 'x' bit mean when applied to directories?
+
+It means you can cd into the directory.
+
+
+
+
+
+
+
+
+3. Which users on the system can delete arbitrary files in the /tpsreports directory?
+
+root, tps, ken, dmr, bwk
+
+
+
+
+
+
+
+
+4. Is there any way that non-wheel employees can read files in the /tpsreports directory?
+
+No because `other` has no access at all.
+
+
+
+
+
+
+
+
+5. What do '0' permissions mean for the owner of a directory? What privileges do they have over files in that directory?
+
+It means the owner cannot list files in the directory, nor create a file in the directory, nor cd into the directory.
+
+
+
+
+
+
+
+
+6. Is this safe? Why or why not? If it is not safe, is there a better way to give larry this access? If it is safe, how do you know it is safe? (Hint: search online for common sudo issues.)
+
+Granting sudo access to vim is dangerous because the user can then, for example, open /etc/sudoers inside the editor and grant full sudo access to themselves.
+
+Instead, we can grant sudo access only for editing certain files using sudoedit:
+
+larry ALL=(ALL) sudoedit /etc/httpd/conf/httpd.conf
+
+
+
+
+
+
+
+
+7: Assuming the init script /etc/init.d/httpd has no unknown vulnerabilities, is it safe to grant larry sudo access to the command /etc/init.d/httpd restart? If this is not secure, explain why.
+
+Yes.
+
+
+
+
+
+
+
+
+8: Is there some way that moe or curly could subvert this system to gain root privileges? If not, how do you know this is true?
+
+No because they don't have permissions to modify /etc/sudoers.
+
+
+
+
+
+
+

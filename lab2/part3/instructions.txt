@@ -1,0 +1,4 @@
+# Patch
+
+1. cd /usr/lib/cgi-bin
+2. patch < /root/part3/fixed.patch

@@ -1,0 +1,22 @@
+--- memo.pl	2021-01-18 09:56:43.000000000 -0800
++++ memo2.pl	2021-01-18 14:41:16.000000000 -0800
+@@ -51,17 +51,14 @@
+ print p('Select a memo from the popup menu below and click the "Read memo" button.');
+ print p("<form method='post' name='main'>\n");
+ 
+-if (!param('memo')) {
++if (!param('memo') or param('memo') =~ m/\.\./ or (param('memo') !~ m#^/(root)/memo/.*$# and param('memo') !~ m#^/home/([^/]+)/memo/.*$#)) {
+ 	list_memo_selector();
+ } else { # there is a memo selected
+ 	list_memo_selector();
+ 	my $memo = param('memo');
+-	my $author = "root";
++	my $author = $1;
+ 	my @stat = stat $memo;
+ 	my $date = localtime $stat[9];
+-	if ($memo =~ m#^/home/([^/]+)/.*$#) {
+-		$author = $1;
+-	}
+ 	print "<hr>\n";
+ 	print "<blockquote>";
+ 	print '<table border=1><tr><td>';

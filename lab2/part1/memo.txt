@@ -1,0 +1,60 @@
+# Memo
+
+## Part 1
+
+1. Describe the security flaw you found, how you fixed it, and how your demo exploit works. (The memo itself should quote as little sourcecode as possible; for longer sections, refer to filenames and line numbers in the original or your attached patch.)
+
+There was a security flaw at line 92 of webserver.c. If a header value, in particular "Content-Length" or "If-Modified-Since", is larger than 1024 bytes, then there will be a buffer overflow.
+
+To fix the issue, I simply truncated the header value larger than 1024 bytes to 1024 bytes (i.e. chopping off all the bytes after 1024-th byte).
+
+The demo explit makes a POST request with Content-Length header value way larger than 1024 bytes, which will corrupt lots of data in the memory.
+
+
+
+
+
+
+
+
+2. Considering fhttpd alone, include in your memo:
+
+- An evaluation of the seriousness of the breach
+
+The breach is very serious because the attacker can easily shuts down the server and all the legitimate users can no longer access the website.
+
+- A recovery plan for the server. (Is it enough to fix the flaw? Why or why not?)
+
+Yes, the patch should be sufficient to fix the flaw because a legitimate user will not put more than 1024 bytes for a request header value.
+
+- Any other observations or thoughts you might have.
+
+None.
+
+
+
+
+## Extra Credit: Remote Execution
+
+Draft a short writeup describing the steps you took to create the exploit and what you learned in the process.
+
+I used these resources to create the exploit:
+
+- https://www.coengoedegebure.com/buffer-overflow-attacks-explained/
+- https://samsclass.info/127/proj/ED402.htm
+- https://www.codeproject.com/Articles/5165534/Basic-x86-64bit-Buffer-Overflows-in-Linux
+- https://medium.com/@buff3r/basic-buffer-overflow-on-64-bit-architecture-3fb74bab3558
+
+1. Run the server locally
+2. Overflow `hdrval` buffer with the character A (\x41). 
+3. Using gdb, study the assembly code of get_header()
+4. Using gdb, put a break point at line 92 of webserver.c 
+5. Check the memory address of rbp register (0x7ffff75afe30)
+6. The return address is stored right above rbp register in terms of the program stack (0x7ffff75afe38)
+7. Fill the first 100 bytes of the buffer with NOP Sled (0x90)
+8. Next, fill the shellcode that will listen for a connection and spawn a command shell at port 4444
+9. Fill the rest of the buffer with character 'X' up until the return address
+10. Fill the return address with an address somewhere in the NOP Sled (0x00007ffff75af9f0)
+11. Now, when the get_header() function returns, it will return to a memory address of the malicious code we injected.
+
+Note: I needed to add "-z execstack" option to Makefile webserver.c target in order to make this exploit work. By default, the program throws segmentaion fault immediately when it tries to execute instructions in GNU_STACK.

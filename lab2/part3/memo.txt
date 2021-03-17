@@ -1,0 +1,21 @@
+1. A description of the security flaw in the FCCU application
+
+The SQL query was not protected from SQL injection. A malicious users was able to login to every user account.
+
+2. A description of how you fixed the flaw. How does your fix solve the problem?
+
+I used prepared statement to fix the flaw. Prepared statements prevent SQL injections.
+
+3. Considering the FCCU application alone, describe a recovery plan for the server, answering:
+
+- How serious was this breach? Could attackers gain root access through this vulnerability?
+
+This breach is very serious. Users' personal information is leaked and money can get wired to somewhere else. No attackers can't gain root access through this vulnerability because mysqli_query() does not allow executing multiple queries, so attacker can't execute something like `COMMAND sudo su -`.
+
+- What should be done with the server in order to secure it?
+
+Use prepared statements to prevent SQL injections.
+
+- Include any other observations or thoughts you might have.
+
+It was fun.

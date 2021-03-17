@@ -1,0 +1,22 @@
+############################################################################
+#                                                                          #
+#  change the symbol FZCO to OWND                                          #
+#                                                                          #
+############################################################################
+
+# Check if the packet is TCP packet with source port 80
+# i.e. HTTP packet from bob to alice
+if (ip.proto == TCP && tcp.src == 80) {
+   
+   # check if the payload contains the string "FZCO"
+   if (search(DATA.data, "FZCO")) {
+
+      # replace "FZCO" with "OWND"
+      # note: replacement string is same length as original string
+      replace("FZCO", "OWND"); 
+
+      # debug message
+      msg("zapped FZCO!\n");
+      
+   }
+}

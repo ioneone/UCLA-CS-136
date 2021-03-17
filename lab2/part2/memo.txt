@@ -1,0 +1,32 @@
+1. describe the security flaw you found, how you fixed it, and how your demo exploit works. The memo itself should quote as little sourcecode as possible; for longer sections, refer to filenames and line numbers in the original or your attached source.
+
+First, I found that memo.cgi file is owned by root and has setuid bit set. This means when any user executes memo.cgi, the process will have root privillage.
+
+Second, the CGI program uses param('memo') to get file content specified in the form data. In POST request, param() reads form data, while in GET request, param() reads query parameters.
+
+There is a security flaw because we can use elinks to pass query parameter memo=/etc/shadow and the CGI program will output the content of /etc/shadow successfully because it has root privillage.
+
+To fix the issue, I first check if filepath of memo contains two dots (i.e. ..). If so, don't do anything. Second, I check if the filepath has the format of /home/*/memo/* or /root/memo/*. If not, don't do anything. Otherwise, display the content of the filepath. Finally, I removed the setuid bit from memo.cgi so that the process won't have root privillage. 
+
+
+
+
+
+
+
+2. Considering memo.cgi alone, include in your memo:
+
+- A recovery plan for the server, answering: How serious was this breach? What should be done with the server in order to secure it?
+
+The breach is very serious because attacker can read any sensitive information they want as long as they know the filepath. To secure the server, we should rotate all the sensitive data such as passwords, tokens, etc.
+
+- An explanation of why it is not sufficient to simply make sure that the pathnames start with /home/username/memo/ or /root/memo/
+
+Because you can still access any file you want using two dots (i.e. ..). For example, an attacker can still read /etc/shadow with /home/username/memo/../../../etc/shadow.
+
+- Any other observations or thoughts you might have.
+
+I see two points:
+
+1. Checking the filepath is like application level security
+2. Removing the setuid bit is like system level security

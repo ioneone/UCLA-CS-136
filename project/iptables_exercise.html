@@ -1,0 +1,266 @@
+<HTML>
+<HEAD>
+<TITLE>Security Review of iptables</TITLE>
+</HEAD>
+<BODY>
+<CENTER>
+<H1> Security Review of iptables</H1>
+</CENTER>
+<P>
+<H2>Introduction</H2>
+<P>
+Some programs are specifically intended to be used to improve the security
+of systems.  There are multiple security concerns about such tools.  First and
+foremost is whether the tool does the job it is intended to do, from a security
+perspective.  For example, does the virus scanner actually find viruses, or
+does the intrusion detection system actually detect intrusions?
+<P>
+But there is another important security aspect of such tools.  They are 
+programs, like any other program, and thus potentially contain bugs.  Some
+of those bugs might compromise the security of the tool itself.  In some
+cases, these security tools must necessarily run at a high privilege level,
+so if they are compromised, the attacker could gain serious advantages in
+attacking our systems.  There are many examples of such security tools
+containing security bugs.  For example, there was <A HREF="https://quickview.cloudapps.cisco.com/quickview/bug/CSCva92151">a recently discovered
+buffer overflow vulnerability</A> in Cisco's Adapative Security Appliance
+software.
+<P>
+Some argue that open source security products are less prone to such problems
+than closed source products.  The argument is that many people will examine
+the code of such open source projects and find the security bugs, and report
+them, before anyone exploits them.  With closed source, perhaps the only 
+parties (other than the company producing the code) who are looking for such
+bugs are hackers who will exploit them if they find them, not report them
+responsibly to the code's authors.
+<P>
+But the history of open source projects has not always shown them to be
+free from security flaws.  Consider two examples.  OpenSSL is an extremely
+widely used open source implementation of the SSL protocol.  In 2014, it
+was revealed that OpenSSL had a serious vulnerability, which was dubbed
+HeartBleed, that allowed compromise of cryptographic keys and passwords used 
+in SSL sessions.  (See <A HREF="https://dl.acm.org/doi/abs/10.1145/2663716.2663755">this research paper</A> for details.  You may need to be on the UCLA network
+to access it.)  Since OpenSSL was so vital to Internet security, it surprised
+many that its source code, visible to any who cared to examine it, had hosted
+such a dangerous bug for many years.
+<P>
+More recently, a similarly <A HREF="https://www.helpnetsecurity.com/2021/01/19/dnsmasq-vulnerabilities/">serious vulnerability</A> was found in dnsmasq, an 
+open source package that provided DNS and other networking services for many
+other packages.  dnsmasq was also obviously security critical, yet it was
+recently shown to contain at least seven serious security bugs, one of which
+would allow remote code execution on devices that used it in a particular way.
+Again, dnsmasq's source code was readable by anyone who chose to do so, yet 
+these serious security flaws persisted in it.
+<P>
+Your assignment is to perform a security evaluation on another important 
+piece of open source security software: iptables.  You have already encountered
+iptables in one of your earlier projects, and have learned something about
+what it does and how it is used from that project.  Now you're going to dive
+into its source code to find potential security problems in that program.
+<P>
+Your task is to perform a security review on iptables, in its ordinary
+use as a security service for a Linux system.   You will examine a particular
+version of iptables, version 1.8.7.  A tarball of the version  you are to
+use is included on the assignment page.  Work with that version of the source
+code, not with any other version.  Your team is to perform the most complete 
+security review possible of this program.
+<P>
+The required submission for the project will be a written report on what you did to 
+evaluate the security of this version of iptables and what you found out by doing so.  You
+are not required to submit any other documents, code, or materials, though if you can
+better explain something or demonstrate a particular behavior with a test program, a sample
+input file, screen shots, output of a code analysis program, or some other evidence
+beyond the report, you may also submit that material.  The team should submit a single report,
+with all team members' names listed on it.  Other materials you include need not be tagged
+with all members' identity, provided it is clear which team submitted them.  Please do not
+submit unlabeled files from multiple different members' CCLE accounts, as we may be
+unable to assign them to the correct team.
+<P>
+<H2>Performing the project</H2>
+<P>
+<H3>Planning and executing your project</H3>
+<P>
+We strongly recommend that your first step should be to create a plan about how you are going
+to perform this project.  The project is flexibly defined and open ended, so you can approach
+it in many different ways.  The wrong thing to do is to just jump in and start poking around
+at the code or running the system and trying things out.  Consider what will be the most 
+fruitful approaches to evaluating the security of iptables, taking into account
+constraints of your schedule, the manpower of your team, your existing skills, availability of
+possible tools, and your experience in how long it takes to get things done.  A well organized
+effort will produce better results than a bunch of shots in the dark.  Take some time up front
+to plan what you will do, when you will do it, how long it will take, who will perform each
+element of the work, and what kind of results you expect to get.  Be sure to leave time at the end
+to write up your results in a final report.
+<P>
+While a preliminary plan is key to success, you should also be prepared to be flexible in its
+execution.  Remember, the goal is not to check off items on your plan list, but to learn about
+the security status of iptables.  If a planned approach proves infeasible,
+will clearly take too long, or is not producing useful results, be prepared to alter your plan.
+But do so knowingly, with clear intention to change your approach, not haphazardly.  Changes in
+the plan should be team decisions.
+<P>
+Be sure to maintain good records of what you did.  These will prove invaluable in writing the
+report.  It's important not merely to record security problems you find, but to record the
+work you did.  Being able to itemize the elements of the code you examined, for example, is just
+as important as pointing out a buffer overflow in one particular routine.
+<P>
+We are not mandating what approaches you take to evaluate the security of the system, nor
+insisting that the overall strategy match one discussed in lectures or in the readings.  You
+should be able to clearly describe in your report what your strategy was, why you chose that 
+strategy, and how the strategy played out as you performed your evaluation.
+<P>
+<H3>Possible evaluation approaches</H3>
+<P>
+What should you do to perform this project?  That is up to you.  There are many techniques
+for evaluating the security of a program or system component, many of which are available to
+you.  Your overall strategy could rely on one or several of them.  A few are listed below, 
+but it is NOT required that you use all of them (or, for that
+matter, any of them), provided your report is based on a sound strategy for evaluating the
+security of this program.  
+<P>
+<UL>
+<LI>A web search for known or likely security problems.  It might be (or might not be) that
+there are known security problems with the current version of iptables, 
+or with some necessary library or other supporting 
+component.  If so, a sufficiently thorough web search might uncover them.  Only problems
+directly related to iptables are relevant, though. So, for example, finding
+generic problems with a particular release of Linux that might host iptables or
+with libc, which is used ubiquitously in Linux programs, is not relevant and is out of
+scope for this investigation. NOTE: it is unlikely that a web search alone will be a sufficient
+security review strategy for this project, though it could be one element of a good strategy.</LI>
+<P>
+<LI>Code review by hand.  This version of of iptables contains over 25,000 lines of code.  That's
+a lot of code, but performing some reasonable amount of code review on it with
+a good sized team is not impossible.  Even if a full code review does not seem worth the
+required effort, you might consider code review techniques that focus attention on smaller
+subsets of the code.  For this project, the point of such a review is to find security-related
+bugs, not non-security bugs, inefficient implementation choices, inconsistencies in coding
+style, or other possible shortcomings in the code.  Only code that definitely contains
+such problems, or at least suggests strong possibilities of them, would be relevant here.  
+<P> 
+One exception to the above is poor coding style that, in the existing implementation, does not contain security flaws, but is
+likely to cause such problems when changes are made to iptables.  For such 
+cases, be sure to include a thorough explanation of
+precisely why the way the code is written may lead to security flaws in the future.  </LI>
+<P>
+<LI>Code review using automated tools.  Tools exist that can be run on source code and can provide
+some kind of insight into the likely security of that code.   This wikipedia page on <A HREF="https://en.wikipedia.org/wiki/List_of_tools_for_static_code_analysis">tools for static code analysis</A> 
+lists a large number of tools that can be applied to source code to check for various problems or
+characteristics.  OWASP also provides a <A HREF="https://www.owasp.org/index.php/Source_Code_Analysis_Tools"> set of source code analysis tools</A>, specifically for security analysis.  Some of these
+tools are language specific, some do not directly relate to security problems, 
+some might not be readily or freely available, and they are likely to be of varying quality and usability.  You could choose to use some of these, or other tools, or tools you yourself write, to
+analyze the security of iptables' code in an automated fashion.
+</LI>
+<P>
+<LI>Formal analysis of the code.  It is possible to use formal analysis techniques that prove
+certain properties of code.  This approach is really a sub-approach of general code analysis,
+but it focuses on provable properties, rather than finding issues in coding that frequently 
+cause problems, locating known security bugs in code, or describing general characteristics of code, such as its complexity.  Such techniques have
+a reputation for being difficult and expensive (computationally and in human effort), but you
+certainly could take this approach if you chose.  The Wikipedia page mentioned above has a
+special <A HREF="https://en.wikipedia.org/wiki/List_of_tools_for_static_code_analysis#Formal_methods_tools">subsection on formal methods tools</A> that could give you a place to start, if this
+approach seems promising to you.  
+</LI>
+<P>
+<LI>Design review.  There is not, to my knowledge, any formal design document for iptables.
+One can deduce elements of its design from some of its documentation, and a high level
+perusal of its code will offer further hints about its design.  One could use this and
+any other available information to build a model of some kind of the design of the program.  Some forms of review
+of that design might point out serious security concerns.</LI>
+<P>
+<LI>Live testing.  iptables can be run on any Linux system.`
+Your team could, if this direction seemed fruitful, compile the code and run it
+on a Linux system under your control.
+Read the instructions in the INSTALL file that is part of the iptables tarball
+and follow them carefully to make a working copy of the program.  Note that
+many Linux installations already have a copy of iptables installed.  You
+do not want to replace that copy or otherwise interfere with its operation,
+and, indeed, on Linux machines that you do not own, you might be unable to do
+so.  You should consider use of a virtual machine running Linux if you pursue
+this option.
+<P>
+If you think it's worthwhile, you can add print statements or otherwise output 
+information from the program, since you have the source code available to you. 
+You could use various approaches to test it for vulnerabilities like
+buffer overflows.  You could use 
+<A HREF="https://en.wikipedia.org/wiki/Fuzzing">fuzz testing</A> on any
+inputs it allows to see if problems pop up.  You could thoroughly exercise any 
+combination of allowable flags to see if incompatibilities lead to 
+vulnerabilities.  You could determine if an attacker can somehow take over
+control of the iptables process and run arbitrary code in a privileged mode.  
+You could test to see if features of the program could be used to
+run some kind of denial of service attack.  As with other approaches,
+only bugs with a security implication would be relevant.  Also, attacks that
+can only work if the attacker already has sufficient privileges to achieve
+the attack's goals without involving iptables are not relevant.  
+Any security problems you discover through testing should be demonstrated 
+or described in sufficient detail that their implications are obvious. </LI>
+</UL>
+<P>
+We do not mandate that you use any of these approaches.  Part of the challenge of this project
+will be to figure out the best approach to use.   Think about your options, make the best informed
+decision you can on how to proceed, and be prepared to defend your choices.
+<P>
+One final note on approaches: here's an approach you are NOT to try.  Do not contact those who wrote and maintain iptables 
+with questions or complaints about this project.  If you find a genuine bug in the code, we will ultimately report it to them, but that decision will be made
+by me.
+<P>
+<H2>Your project report</H2>
+<P>
+Regardless of what methods you use, you must submit a written report describing your approach
+and what you learned about the security of iptables.
+Your report should contain at least the following sections:
+<UL>
+<LI>Summary.  A brief summary of your findings, including the approach(es) you took and what you learned.  This should be at a high level (e.g., "We chose to perform a design review based on documents
+found on the web, followed by live testing using the following methods") and should include some
+conclusion about the security of the system (e.g., "Our result suggest iptables is sufficiently secure" or "Our analysis reveals fatal security flaws in using iptables" 
+or a statement of similar nature). </LI>
+<LI>A description of your original plan for the security evaluation, including steps to be taken,
+tools or approaches used, work assignments, and a schedule.  Since it is likely that your plan
+required some adjustments, you should discuss the degree to which you followed your plan versus
+deviating from it, as well as explanations for such deviations. </LI>
+<LI>Results.  You should describe the results of your security evaluation, providing sufficient
+details to justify any conclusions you reach.  This section should be significantly more
+extensive than the summary, containing a great deal more detail.  If, for example, you found a
+dangerous race condition in the code, you should describe how you found it, what the security 
+implications are, and suggest approaches for fixing it or ensuring that it is not exploited.
+</LI>
+<LI>Recommendations for future evaluations.  If time and resources did not permit you to study
+the program as fully as you feel was desirable, you should discuss how future efforts to better
+understand its security should be directed.  You should also discuss conditions
+under which a fresh review might be required, such as release of a new version of iptables or
+significant changes in how iptables is used in typical systems.</LI>
+<LI>Lessons learned by performing the security evaluation.  Beyond learning something about the
+security of the iptables program itself, we hope you will learn something about designing
+secure systems, secure coding, and evaluating the security of systems.  In this section, discuss
+what you have learned. </LI>
+<LI>Work breakdown.  Indicate exactly which elements of the report and work required to produce
+it were performed by each team member.</LI>
+<LI>Supplementary materials.  If your analysis produced useful artifacts (such as automated 
+reports, screen shots demonstrating problems, scripts used to test functionality, etc.), include
+these in appendices, where possible.  For things that are not easily embedded in a report (such as
+a video demonstrating how to exploit a security flaw), 
+upload them as separate files when you submit the report.  You can also provide links to
+supplementary materials, but if you do, make sure that the materials are in a location that can be accessed by others, not in a private area.  Make sure that your
+supplementary material section indicates which files are uploaded as part of your project, which links
+are associated with your project,  and what each file or link represents.
+</LI>
+</UL>
+<P>
+Your group should submit a single joint report on the project.  Use the CCLE 
+web site to submit your report in PDF form.  Be sure it includes the names of 
+all team members.  
+<P>
+Your grade on the project will be based not on how many security problems 
+you identify, but on the quality and thoroughness of your plan and 
+its execution, and the clarity of your presentation in the report.  The 
+instructor may give different grades to members of the same team, depending 
+on whether all team members made equal contributions.
+<P>
+As with all UCLA class assignments, you are bound by the UCLA 
+rules of academic honesty, which cover issues such as plagiarism and copying
+the work of other students.  Your project must be primarily the work of your
+team members.  You may quote small amounts of material from
+sources not created by yourselves in the report, but be sure to identify the
+sources of such materials.  If you have any doubts about academic honesty
+issues, consult the TA or the class instructor.
+<P>

@@ -1,0 +1,10 @@
+# Working demo with instructions
+
+1. cd /root
+2. ./exploit2.sh
+3. cat shadow.txt
+
+# Patch
+
+1. cd /root/part2
+2. ./patch.sh

